@@ -97,6 +97,16 @@ public class Spectator extends JavaPlugin {
 		return names;
 	}
 
+	public List<String> getOnlinePlayerNames(String prefix) {
+		String lower = prefix.toLowerCase();
+		List<String> names = new ArrayList<>();
+		Bukkit.getOnlinePlayers().forEach(player -> {
+			if(player.getName().toLowerCase().startsWith(lower))
+				names.add(player.getName());
+		});
+		return names;
+	}
+
 	public static void debug(String message) {
 		if(Config.getBoolean(Paths.CONFIG_DEBUG))
     		getPlugin().getLogger().info(message);

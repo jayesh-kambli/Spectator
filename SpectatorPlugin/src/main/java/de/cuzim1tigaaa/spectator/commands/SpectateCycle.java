@@ -138,7 +138,7 @@ public class SpectateCycle implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String s, @Nonnull String[] args) {
         return switch(args.length) {
             case 1 -> List.of("start", "stop");
-            case 2 -> (args[0].equalsIgnoreCase("stop") && hasPermission(sender, COMMANDS_CYCLE_STOP_OTHERS)) ? plugin.getOnlinePlayerNames() : Collections.emptyList();
+            case 2 -> (args[0].equalsIgnoreCase("stop") && hasPermission(sender, COMMANDS_CYCLE_STOP_OTHERS)) ? plugin.getOnlinePlayerNames(args[1]) : Collections.emptyList();
             case 3 -> List.of("alphabetical", "random");
             default -> Collections.emptyList();
         };

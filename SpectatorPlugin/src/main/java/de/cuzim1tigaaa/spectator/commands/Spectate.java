@@ -157,11 +157,11 @@ public class Spectate implements CommandExecutor, TabCompleter {
 				return List.of("-armorstand");
 
 			if(!(sender instanceof Player player) || hasPermission(player, COMMAND_SPECTATE_OTHERS))
-				return plugin.getOnlinePlayerNames();
+				return plugin.getOnlinePlayerNames(args[0]);
 		}
 		if(args.length == 2) {
 			if(!(sender instanceof Player player) || hasPermission(player, COMMAND_SPECTATE_CHANGE_OTHERS))
-				return plugin.getOnlinePlayerNames();
+				return plugin.getOnlinePlayerNames(args[1]);
 		}
 		return Collections.emptyList();
 	}

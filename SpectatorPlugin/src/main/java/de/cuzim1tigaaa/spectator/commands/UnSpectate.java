@@ -85,8 +85,9 @@ public class UnSpectate implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(@Nonnull CommandSender sender, @Nonnull Command command, @Nonnull String s, @Nonnull String[] args) {
         if(args.length == 1) {
-            List<String> names = plugin.getOnlinePlayerNames();
-            names.add("*");
+            List<String> names = plugin.getOnlinePlayerNames(args[0]);
+            if("*".startsWith(args[0]))
+                names.add("*");
             return names;
         }
         if(args.length == 2)
