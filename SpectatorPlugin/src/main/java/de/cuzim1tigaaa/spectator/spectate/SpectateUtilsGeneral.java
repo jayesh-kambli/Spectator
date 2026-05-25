@@ -89,6 +89,7 @@ public class SpectateUtilsGeneral {
 					spectator.teleport(target, PlayerTeleportEvent.TeleportCause.PLUGIN));
 
 		spectator.setGameMode(GameMode.SPECTATOR);
+		spectateAPI.getSpectateInfo().add(info);
 
 		if(sameWorld) {
 			Spectator.debug("Spectator is in same world as target");
@@ -103,7 +104,6 @@ public class SpectateUtilsGeneral {
 		}
 
 		plugin.getInventory().getTargetInventory(spectator, target);
-		spectateAPI.getSpectateInfo().add(info);
 		notifyTarget(target, spectator, true);
 	}
 
