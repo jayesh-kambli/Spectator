@@ -77,7 +77,7 @@ public class Cycle {
 			if(!owner.hasPermission(Permissions.BYPASS_SPECTATEALL) && p.hasPermission(Permissions.BYPASS_SPECTATED))
 				return true;
 
-			return MultiverseHandler.getInstance().canPlayerJoinWorld(owner, p.getWorld());
+			return !MultiverseHandler.getInstance().canPlayerJoinWorld(owner, p.getWorld());
 		});
 
 		alreadyVisited.removeIf(p -> !p.isOnline());
