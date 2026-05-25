@@ -6,7 +6,6 @@ import lombok.Getter;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 public class UpdateChecker {
@@ -19,10 +18,11 @@ public class UpdateChecker {
     public UpdateChecker(Spectator plugin) {
         this.plugin = plugin;
 
-        this.checkUpdate().thenAcceptAsync(isUpdateAvailable -> {
+        plugin.getServer().getAsyncScheduler().runNow(plugin, task -> {
+            boolean isUpdate = checkUpdate();
             //noinspection AssignmentUsedAsCondition
-            if(this.update = isUpdateAvailable)
-                this.updateAvailable();
+            if(this.update = isUpdate)
+                updateAvailable();
         });
     }
 
@@ -31,9 +31,7 @@ public class UpdateChecker {
         this.plugin.getLogger().log(Level.WARNING, "https://www.spigotmc.org/resources/spectator.93051/");
     }
 
-    private CompletableFuture<Boolean> checkUpdate() {
-        final CompletableFuture<Boolean> result = new CompletableFuture<>();
-
+    private boolean checkUpdate() {
         this.plugin.getLogger().log(Level.INFO, "Checking for Updates…");
         String versionString = this.plugin.getDescription().getVersion();
 
@@ -42,17 +40,14 @@ public class UpdateChecker {
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
-            if(connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                result.complete(false);
-                return result;
-            }
+            if(connection.getResponseCode() != HttpURLConnection.HTTP_OK)
+                return false;
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             this.version = reader.readLine().replace("v", "");
-            result.complete(!versionString.equalsIgnoreCase(this.version));
-            return result;
+            return !versionString.equalsIgnoreCase(this.version);
         }catch(IOException exception) {
-            result.complete(false);
-            return result;
+            return false;
         }
     }
 }

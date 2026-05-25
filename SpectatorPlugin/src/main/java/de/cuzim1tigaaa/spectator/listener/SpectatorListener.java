@@ -5,8 +5,8 @@ import de.cuzim1tigaaa.spectator.Spectator;
 import de.cuzim1tigaaa.spectator.cycle.CycleTask;
 import de.cuzim1tigaaa.spectator.files.*;
 import de.cuzim1tigaaa.spectator.spectate.SpectateUtilsGeneral;
+import de.cuzim1tigaaa.spectator.util.SchedulerUtils;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -53,7 +53,7 @@ public class SpectatorListener implements Listener {
 		}
 
 		if(spectateUtils.getTeleportIfReLogin().containsKey(player.getUniqueId()))
-			Bukkit.getScheduler().runTaskLater(plugin, () -> player.teleport(
+			SchedulerUtils.runEntityLater(plugin, player, () -> player.teleport(
 					spectateUtils.getTeleportIfReLogin().remove(player.getUniqueId()),
 					PlayerTeleportEvent.TeleportCause.PLUGIN), 20L);
 
@@ -169,9 +169,8 @@ public class SpectatorListener implements Listener {
 			event.setCancelled(true);
 			if(!Config.getBoolean(Paths.CONFIG_CYCLE_KICK_PLAYERS))
 				return;
-			spectateAPI.isCyclingSpectator(spectator);
 			spectateUtils.unspectate(spectator, true);
-			Bukkit.getScheduler().runTaskLater(plugin, () -> spectator.kickPlayer(event.getReason()), 10L);
+			SchedulerUtils.runEntityLater(plugin, spectator, () -> spectator.kickPlayer(event.getReason()), 10L);
 		}
 	}
 

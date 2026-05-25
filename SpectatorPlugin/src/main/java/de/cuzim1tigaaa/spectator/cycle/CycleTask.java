@@ -6,9 +6,10 @@ import de.cuzim1tigaaa.spectator.files.*;
 import de.cuzim1tigaaa.spectator.listener.TeleportListener;
 import de.cuzim1tigaaa.spectator.spectate.Displays;
 import de.cuzim1tigaaa.spectator.spectate.SpectateState;
+import de.cuzim1tigaaa.spectator.util.SchedulerUtils;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 
@@ -23,27 +24,32 @@ public class CycleTask {
 
 	private final int interval;
 
-	@Setter
-	private int taskId;
+	/** Running handle for the cycle interval timer; null means not running. */
+	private ScheduledTask runningTask;
 	@Setter
 	private Cycle cycle;
 	@Setter
 	private BossBar bossBar;
 	@Setter
-	private Integer showTargetTask;
+	private ScheduledTask showTargetTask;
 
 	public CycleTask(int interval, Cycle cycle) {
 		this.interval = interval;
 		this.cycle = cycle;
 		this.showTargetTask = null;
-		this.taskId = -1;
+		this.runningTask = null;
+	}
+
+	public boolean isRunning() {
+		return runningTask != null && !runningTask.isCancelled();
 	}
 
 	public void startTask(Spectator plugin) {
-		if(taskId != -1)
+		if(isRunning())
 			return;
 
-		setTaskId(Bukkit.getScheduler().runTaskTimer(plugin, () -> selectNextPlayer(plugin), 0L, interval * 20L).getTaskId());
+		runningTask = SchedulerUtils.runEntityTimer(plugin, cycle.getOwner(),
+				() -> selectNextPlayer(plugin), 1L, interval * 20L);
 		displays.showCycleDisplay(cycle.getOwner());
 	}
 
@@ -79,19 +85,19 @@ public class CycleTask {
 	}
 
 	public CycleTask stopTask() {
-		if(taskId == -1)
+		if(!isRunning())
 			return this;
-		Bukkit.getScheduler().cancelTask(taskId);
+		runningTask.cancel();
+		runningTask = null;
 
 		if(getBossBar() != null)
 			getBossBar().removeAll();
 
 		if(getShowTargetTask() != null) {
-			Bukkit.getScheduler().cancelTask(getShowTargetTask());
+			getShowTargetTask().cancel();
 			setShowTargetTask(null);
 		}
 
-		this.taskId = -1;
 		return this;
 	}
 }

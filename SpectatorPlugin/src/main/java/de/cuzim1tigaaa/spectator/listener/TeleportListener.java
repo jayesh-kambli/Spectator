@@ -4,6 +4,7 @@ import de.cuzim1tigaaa.spectator.SpectateAPI;
 import de.cuzim1tigaaa.spectator.Spectator;
 import de.cuzim1tigaaa.spectator.files.Messages;
 import de.cuzim1tigaaa.spectator.files.Paths;
+import de.cuzim1tigaaa.spectator.util.SchedulerUtils;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -60,7 +61,7 @@ public class TeleportListener implements Listener {
 			spectateAPI.getSpectateGeneral().unspectate(spectator, true);
 			spectateAPI.toggleTabList(spectator, true);
 
-			Bukkit.getScheduler().runTaskLater(plugin, () ->
+			SchedulerUtils.runEntityLater(plugin, spectator, () ->
 					spectateAPI.getSpectateGeneral().spectate(spectator, null), 20L);
 		}
 	}
@@ -92,7 +93,7 @@ public class TeleportListener implements Listener {
 			Spectator.debug(String.format("Spectator %-16s was spectating player %-16s", spectator.getName(), player.getName()));
 			spectateAPI.dismount(spectator);
 			worldChange.put(spectator.getUniqueId(), spectator);
-			spectator.teleport(player);
+			SchedulerUtils.runEntity(plugin, spectator, () -> spectator.teleport(player));
 		});
 	}
 

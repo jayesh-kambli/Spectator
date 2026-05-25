@@ -4,13 +4,13 @@ import de.cuzim1tigaaa.spectator.SpectateAPI;
 import de.cuzim1tigaaa.spectator.Spectator;
 import de.cuzim1tigaaa.spectator.cycle.CycleTask;
 import de.cuzim1tigaaa.spectator.files.*;
+import de.cuzim1tigaaa.spectator.util.SchedulerUtils;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.plugin.IllegalPluginAccessException;
 
 import java.util.*;
 
@@ -34,33 +34,32 @@ public class SpectateUtilsGeneral {
 	}
 
 	private void run() {
-		Bukkit.getScheduler().runTaskTimer(plugin, () ->
-				spectateAPI.getSpectators().forEach(spectator -> {
-					SpectateInformation info = spectateAPI.getSpectateInfo(spectator);
-					if(info == null) {
-						spectator.setGameMode(GameMode.SURVIVAL);
-						spectateAPI.getSpectators().remove(spectator);
-						return;
-					}
+		SchedulerUtils.runGlobalTimer(plugin, () ->
+				new ArrayList<>(spectateAPI.getSpectators()).forEach(spectator ->
+						spectator.getScheduler().run(plugin, st -> {
+							SpectateInformation info = spectateAPI.getSpectateInfo(spectator);
+							if(info == null) {
+								spectator.setGameMode(GameMode.SURVIVAL);
+								return;
+							}
 
-					if(info.getTarget() == null)
-						return;
+							if(info.getTarget() == null)
+								return;
 
-					Player target = info.getTarget();
+							Player target = info.getTarget();
 
-					plugin.getInventory().getTargetInventory(spectator, target);
+							plugin.getInventory().getTargetInventory(spectator, target);
 
-					if(spectator.getSpectatorTarget() == null)
-						spectateAPI.setRelation(spectator, target);
+							if(spectator.getSpectatorTarget() == null)
+								spectateAPI.setRelation(spectator, target);
 
-					if(!spectator.getWorld().equals(target.getWorld())
-							|| spectator.getLocation().distanceSquared(target.getLocation()) > 10) {
-						spectateAPI.dismount(spectator);
-						Bukkit.getScheduler().runTask(plugin, () ->
-								spectator.teleport(target, PlayerTeleportEvent.TeleportCause.PLUGIN));
-					}
-					spectateAPI.setRelation(spectator, target);
-				}), 0, 15);
+							if(!spectator.getWorld().equals(target.getWorld())
+									|| spectator.getLocation().distanceSquared(target.getLocation()) > 10) {
+								spectateAPI.dismount(spectator);
+								spectator.teleport(target, PlayerTeleportEvent.TeleportCause.PLUGIN);
+							}
+							spectateAPI.setRelation(spectator, target);
+						}, null)), 1, 15);
 	}
 
 
@@ -86,7 +85,7 @@ public class SpectateUtilsGeneral {
 		boolean sameWorld = target == null || spectator.getWorld().equals(target.getWorld());
 
 		if(target != null)
-			Bukkit.getScheduler().runTask(plugin, () ->
+			SchedulerUtils.runEntity(plugin, spectator, () ->
 					spectator.teleport(target, PlayerTeleportEvent.TeleportCause.PLUGIN));
 
 		spectator.setGameMode(GameMode.SPECTATOR);
@@ -96,10 +95,11 @@ public class SpectateUtilsGeneral {
 			spectateAPI.setRelation(spectator, target);
 		}else {
 			Spectator.debug("Spectator is in different world than target");
-			Bukkit.getScheduler().runTask(plugin, () ->
+			SchedulerUtils.runEntity(plugin, spectator, () ->
 					spectator.teleport(target, PlayerTeleportEvent.TeleportCause.PLUGIN));
 			spectateAPI.dismount(spectator);
-			Bukkit.getScheduler().runTaskLater(plugin, () -> spectateAPI.setRelation(spectator, target), 15L);
+			SchedulerUtils.runEntityLater(plugin, spectator, () ->
+					spectateAPI.setRelation(spectator, target), 15L);
 		}
 
 		plugin.getInventory().getTargetInventory(spectator, target);
@@ -130,7 +130,7 @@ public class SpectateUtilsGeneral {
 			info.restoreAttributes(true);
 
 		try {
-			Bukkit.getScheduler().runTask(plugin, () -> {
+			SchedulerUtils.runEntity(plugin, spectator, () -> {
 				if(spectator.isOnline()) {
 					spectator.teleport(finalLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
 					return;
@@ -138,7 +138,7 @@ public class SpectateUtilsGeneral {
 				Spectator.debug("Could not teleport player, saving location for relogin");
 				this.teleportIfReLogin.put(spectator.getUniqueId(), finalLocation);
 			});
-		}catch(IllegalPluginAccessException e) {
+		}catch(Exception e) {
 			// if unspectate is triggered by server shutting down
 			spectator.teleport(finalLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
 		}

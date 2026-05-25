@@ -55,7 +55,7 @@ public class SpectateUtilsCycle {
             return;
 
         SpectateInformation info = spectateAPI.getSpectateInfo(spectator);
-        CycleTask cycle = info.getCycleTask().stopTask();
+        info.getCycleTask().stopTask();
         info.setState(SpectateState.PAUSED);
         spectateAPI.dismount(spectator);
     }

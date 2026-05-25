@@ -123,7 +123,7 @@ public class SpectateAPI {
     }
 
     public void restoreArmorstands() {
-
+        getSpectators().forEach(this::showArmorstands);
     }
 
     public void showArmorstands(Player spectator) {
@@ -134,8 +134,11 @@ public class SpectateAPI {
         if(info == null)
             return;
 
-        hiddenArmorStands.get(spectator.getUniqueId()).forEach(armorStand ->
-                spectator.showEntity(Spectator.getPlugin(), armorStand));
+        List<ArmorStand> stands = hiddenArmorStands.get(spectator.getUniqueId());
+        if(stands == null)
+            return;
+
+        stands.forEach(armorStand -> spectator.showEntity(Spectator.getPlugin(), armorStand));
         hiddenArmorStands.remove(spectator.getUniqueId());
     }
 
