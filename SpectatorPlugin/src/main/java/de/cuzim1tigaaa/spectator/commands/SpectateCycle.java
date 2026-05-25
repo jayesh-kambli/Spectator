@@ -59,6 +59,7 @@ public class SpectateCycle implements CommandExecutor, TabCompleter {
                     seconds = Integer.parseInt(args[1]);
                 }catch(NumberFormatException ignored) {
                     Messages.sendMessage(player, Paths.MESSAGES_GENERAL_NUMBERFORMAT);
+                    return true;
                 }
 
                 int min = Config.getInt(Paths.CONFIG_CYCLE_MIN_INTERVAL);

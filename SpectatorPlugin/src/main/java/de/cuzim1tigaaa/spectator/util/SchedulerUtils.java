@@ -36,7 +36,7 @@ public final class SchedulerUtils {
      */
     public static ScheduledTask runEntityTimer(Plugin plugin, Entity entity, Runnable task, long initialDelay, long period) {
         return entity.getScheduler().runAtFixedRate(plugin, st -> task.run(), null,
-                Math.max(1L, initialDelay), period);
+                Math.max(1L, initialDelay), Math.max(1L, period));
     }
 
     /**
