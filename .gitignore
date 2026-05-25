@@ -7,3 +7,7 @@ SpectatorTest/target
 Spectator.iml
 SpectatorPlugin/SpectatorPlugin.iml
 SpectatorTest/SpectatorTest.iml
+
+# Claude Code
+.claude/
+CLAUDE.md
