@@ -5,14 +5,32 @@
 
 ***
 
+### This Fork
+
+This is a fork of [CuzIm1Tigaaa/Spectator](https://github.com/CuzIm1Tigaaa/Spectator) adding **Folia compatibility** and several **bug fixes**.
+See [WHY_FORK.md](WHY_FORK.md) for a full breakdown of what changed and why.
+
+***
+
 ### Minecraft Versions:
 
 Tested Version(s): **1.19.x**, **1.20.x**, **1.21.x**<br/>
 Should also work with: **1.16.x**, **1.17.x**, **1.18.x**
 
+> **Requires Paper 1.20.4+ or Folia.** Spigot is not supported — this fork uses Paper-only scheduler APIs.
+
 ***
 
-### Important links:
+### Documentation
+
+| Description         | Link |
+|---------------------|------|
+| Commands & Permissions | [GUIDE.md](GUIDE.md) |
+| Fork changelog & rationale | [WHY_FORK.md](WHY_FORK.md) |
+
+***
+
+### Important links (upstream):
 
 | Description             |                              Link                               |
 |-------------------------|:---------------------------------------------------------------:|
