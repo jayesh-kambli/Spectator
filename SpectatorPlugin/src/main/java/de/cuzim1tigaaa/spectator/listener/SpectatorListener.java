@@ -7,6 +7,7 @@ import de.cuzim1tigaaa.spectator.files.*;
 import de.cuzim1tigaaa.spectator.spectate.SpectateUtilsGeneral;
 import de.cuzim1tigaaa.spectator.util.SchedulerUtils;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -52,10 +53,11 @@ public class SpectatorListener implements Listener {
 				this.sendUpdateNotification(player);
 		}
 
-		if(spectateUtils.getTeleportIfReLogin().containsKey(player.getUniqueId()))
-			SchedulerUtils.runEntityLater(plugin, player, () -> player.teleportAsync(
-					spectateUtils.getTeleportIfReLogin().remove(player.getUniqueId()),
-					PlayerTeleportEvent.TeleportCause.PLUGIN), 20L);
+		if(spectateUtils.getPendingTeleports().contains(player.getUniqueId()))
+			SchedulerUtils.runEntityLater(plugin, player, () -> {
+				Location loc = spectateUtils.getPendingTeleports().getAndRemove(player.getUniqueId());
+				if(loc != null) player.teleportAsync(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
+			}, 20L);
 
 		if(Config.getBoolean(Paths.CONFIG_HIDE_PLAYERS_TAB) && !hasPermission(player, BYPASS_TABLIST))
 			spectateAPI.getSpectators().forEach(spectator -> player.hidePlayer(plugin, spectator));

@@ -22,13 +22,14 @@ public class SpectateUtilsGeneral {
 
 	private final Map<UUID, Location> spectateStartLocation = new HashMap<>();
 	private final Map<UUID, CycleTask> spectateCycle;
-	private final Map<UUID, Location> teleportIfReLogin = new HashMap<>();
+	private final PendingTeleports pendingTeleports;
 
 	public SpectateUtilsGeneral(SpectateAPI spectateAPI) {
 		this.plugin = spectateAPI.getPlugin();
 		this.spectateAPI = spectateAPI;
 
 		this.spectateCycle = new HashMap<>();
+		this.pendingTeleports = new PendingTeleports(plugin);
 
 		this.run();
 	}
@@ -135,8 +136,8 @@ public class SpectateUtilsGeneral {
 					spectator.teleportAsync(finalLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
 					return;
 				}
-				this.teleportIfReLogin.put(spectator.getUniqueId(), finalLocation);
-			}, () -> this.teleportIfReLogin.put(spectator.getUniqueId(), finalLocation));
+				this.pendingTeleports.save(spectator.getUniqueId(), finalLocation);
+			}, () -> this.pendingTeleports.save(spectator.getUniqueId(), finalLocation));
 		}catch(Exception e) {
 			// triggered during server shutdown — teleportAsync may not be available
 			spectator.teleportAsync(finalLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
