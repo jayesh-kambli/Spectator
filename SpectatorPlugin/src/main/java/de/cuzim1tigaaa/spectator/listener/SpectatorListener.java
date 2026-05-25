@@ -53,7 +53,7 @@ public class SpectatorListener implements Listener {
 		}
 
 		if(spectateUtils.getTeleportIfReLogin().containsKey(player.getUniqueId()))
-			SchedulerUtils.runEntityLater(plugin, player, () -> player.teleport(
+			SchedulerUtils.runEntityLater(plugin, player, () -> player.teleportAsync(
 					spectateUtils.getTeleportIfReLogin().remove(player.getUniqueId()),
 					PlayerTeleportEvent.TeleportCause.PLUGIN), 20L);
 

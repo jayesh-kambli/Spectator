@@ -56,7 +56,7 @@ public class SpectateUtilsGeneral {
 							if(!spectator.getWorld().equals(target.getWorld())
 									|| spectator.getLocation().distanceSquared(target.getLocation()) > 10) {
 								spectateAPI.dismount(spectator);
-								spectator.teleport(target, PlayerTeleportEvent.TeleportCause.PLUGIN);
+								spectator.teleportAsync(target.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
 							}
 							spectateAPI.setRelation(spectator, target);
 						}, null)), 1, 15);
@@ -86,7 +86,7 @@ public class SpectateUtilsGeneral {
 
 		if(target != null)
 			SchedulerUtils.runEntity(plugin, spectator, () ->
-					spectator.teleport(target, PlayerTeleportEvent.TeleportCause.PLUGIN));
+					spectator.teleportAsync(target.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN));
 
 		spectator.setGameMode(GameMode.SPECTATOR);
 		spectateAPI.getSpectateInfo().add(info);
@@ -97,7 +97,7 @@ public class SpectateUtilsGeneral {
 		}else {
 			Spectator.debug("Spectator is in different world than target");
 			SchedulerUtils.runEntity(plugin, spectator, () ->
-					spectator.teleport(target, PlayerTeleportEvent.TeleportCause.PLUGIN));
+					spectator.teleportAsync(target.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN));
 			spectateAPI.dismount(spectator);
 			SchedulerUtils.runEntityLater(plugin, spectator, () ->
 					spectateAPI.setRelation(spectator, target), 15L);
@@ -132,15 +132,15 @@ public class SpectateUtilsGeneral {
 		try {
 			SchedulerUtils.runEntity(plugin, spectator, () -> {
 				if(spectator.isOnline()) {
-					spectator.teleport(finalLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
+					spectator.teleportAsync(finalLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
 					return;
 				}
 				Spectator.debug("Could not teleport player, saving location for relogin");
 				this.teleportIfReLogin.put(spectator.getUniqueId(), finalLocation);
 			});
 		}catch(Exception e) {
-			// if unspectate is triggered by server shutting down
-			spectator.teleport(finalLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
+			// triggered during server shutdown — teleportAsync may not be available
+			spectator.teleportAsync(finalLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
 		}
 
 		spectateAPI.toggleTabList(spectator, false);

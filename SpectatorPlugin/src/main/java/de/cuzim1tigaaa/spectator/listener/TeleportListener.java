@@ -93,7 +93,7 @@ public class TeleportListener implements Listener {
 			Spectator.debug(String.format("Spectator %-16s was spectating player %-16s", spectator.getName(), player.getName()));
 			spectateAPI.dismount(spectator);
 			worldChange.put(spectator.getUniqueId(), spectator);
-			SchedulerUtils.runEntity(plugin, spectator, () -> spectator.teleport(player));
+			SchedulerUtils.runEntity(plugin, spectator, () -> spectator.teleportAsync(player.getLocation()));
 		});
 	}
 
