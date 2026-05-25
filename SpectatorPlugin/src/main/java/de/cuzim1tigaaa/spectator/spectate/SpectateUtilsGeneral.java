@@ -135,9 +135,8 @@ public class SpectateUtilsGeneral {
 					spectator.teleportAsync(finalLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
 					return;
 				}
-				Spectator.debug("Could not teleport player, saving location for relogin");
 				this.teleportIfReLogin.put(spectator.getUniqueId(), finalLocation);
-			});
+			}, () -> this.teleportIfReLogin.put(spectator.getUniqueId(), finalLocation));
 		}catch(Exception e) {
 			// triggered during server shutdown — teleportAsync may not be available
 			spectator.teleportAsync(finalLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);

@@ -17,6 +17,14 @@ public final class SchedulerUtils {
         entity.getScheduler().run(plugin, st -> task.run(), null);
     }
 
+    /**
+     * Run a task on the entity's region thread next tick.
+     * {@code retired} is called if the entity is removed before the task can run (Folia only).
+     */
+    public static void runEntity(Plugin plugin, Entity entity, Runnable task, Runnable retired) {
+        entity.getScheduler().run(plugin, st -> task.run(), retired);
+    }
+
     /** Run a delayed task on the entity's region thread. */
     public static void runEntityLater(Plugin plugin, Entity entity, Runnable task, long delay) {
         entity.getScheduler().runDelayed(plugin, st -> task.run(), null, delay);
