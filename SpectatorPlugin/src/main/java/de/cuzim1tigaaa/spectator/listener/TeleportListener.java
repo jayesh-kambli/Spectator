@@ -57,12 +57,7 @@ public class TeleportListener implements Listener {
 		if(spectateAPI.hasPlayerAccessToWorld(spectator, to.getWorld())) {
 			Spectator.debug(String.format("Spectator %-16s switched world! From [%s] to [%s]", spectator.getName(), from.getWorld().getName(), to.getWorld().getName()));
 			event.setCancelled(true);
-
 			spectateAPI.getSpectateGeneral().unspectate(spectator, true);
-			spectateAPI.toggleTabList(spectator, true);
-
-			SchedulerUtils.runEntityLater(plugin, spectator, () ->
-					spectateAPI.getSpectateGeneral().spectate(spectator, null), 20L);
 		}
 	}
 
@@ -91,8 +86,8 @@ public class TeleportListener implements Listener {
 		Spectator.debug(String.format("Player %-16s switched world! From [%s] to [%s]", player.getName(), from.getWorld().getName(), to.getWorld().getName()));
 		spectateAPI.getSpectatorsOf(player).forEach(spectator -> {
 			Spectator.debug(String.format("Spectator %-16s was spectating player %-16s", spectator.getName(), player.getName()));
-			spectateAPI.dismount(spectator);
-			worldChange.put(spectator.getUniqueId(), spectator);
+			// Do NOT dismount — keeping the relation means spectatorSwitchingWorld skips
+			// this teleport, and the monitoring loop re-attaches the view after arrival.
 			SchedulerUtils.runEntity(plugin, spectator, () -> spectator.teleportAsync(player.getLocation()));
 		});
 	}

@@ -103,10 +103,12 @@ public class SpectatorListener implements Listener {
 		spectateAPI.getSpectators().forEach(spectator -> player.showPlayer(plugin, spectator));
 
 		for(Player spectator : spectateAPI.getSpectatorsOf(player)) {
-			spectateAPI.dismount(spectator);
-
-			if(!spectateAPI.isCyclingSpectator(spectator))
+			if(!spectateAPI.isCyclingSpectator(spectator)) {
+				spectateUtils.unspectate(spectator, true);
 				continue;
+			}
+
+			spectateAPI.dismount(spectator);
 
 			if(player.hasPermission(BYPASS_SPECTATED) || spectateAPI.getSpectateablePlayers().size() - 1 > 0) {
 				spectateAPI.getCycleTask(spectator).selectNextPlayer(plugin);
@@ -188,10 +190,12 @@ public class SpectatorListener implements Listener {
 		}
 
 		for(Player spectator : spectateAPI.getSpectatorsOf(player)) {
-			spectateAPI.dismount(spectator);
-
-			if(spectateAPI.isCyclingSpectator(spectator))
+			if(spectateAPI.isCyclingSpectator(spectator)) {
+				spectateAPI.dismount(spectator);
 				spectateAPI.getSpectateCycle().teleportNextPlayer(spectator);
+			} else {
+				spectateUtils.unspectate(spectator, true);
+			}
 		}
 	}
 }
